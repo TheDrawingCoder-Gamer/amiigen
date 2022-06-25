@@ -9,6 +9,7 @@ mod tests {
 
 use rand::Rng;
 use std::num::ParseIntError;
+#[derive(Debug)]
 pub enum AmiigenError {
     InvalidData(String),
 }
