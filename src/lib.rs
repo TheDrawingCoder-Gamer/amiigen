@@ -8,16 +8,14 @@ mod tests {
 }
 
 use rand::Rng;
+use std::io;
 use std::num::ParseIntError;
-#[derive(Debug)]
-pub enum AmiigenError {
-    InvalidData(String),
-}
 // generates amiibo for use with arduino writer
-pub fn gen_amiibo(amiibo_id: [u8; 8], tag_uid: &[u8]) -> Result<[u8; 540], AmiigenError> {
+pub fn gen_amiibo(amiibo_id: [u8; 8], tag_uid: &[u8]) -> io::Result<[u8; 540]> {
     if tag_uid.len() < 7 {
-        return Err(AmiigenError::InvalidData(
-            "Please use a valid 7 or 9 byte uid".to_string(),
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Please use a valid 7 or 9 byte uid",
         ));
     }
     let (small_uid, bcc1, uid) = match tag_uid.len() {
@@ -39,7 +37,8 @@ pub fn gen_amiibo(amiibo_id: [u8; 8], tag_uid: &[u8]) -> Result<[u8; 540], Amiig
             ];
             Ok((small_uid, tag_uid[8], tag_uid[0..8].try_into().unwrap())) // meant to be inclusive
         }
-        _ => Err(AmiigenError::InvalidData(
+        _ => Err(io::Error::new(
+            io::ErrorKind::InvalidData,
             "Please use a valid 7 or 9 byte uid".to_string(),
         )),
     }?;
